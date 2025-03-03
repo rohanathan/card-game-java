@@ -21,6 +21,8 @@ public class CardClicked implements EventProcessor {
 
     @Override
     public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
+        System.out.println("Cardclicked"+message);
+        
         int handPosition = message.get("position").asInt();
         Card selectedCard = gameState.getPlayer1Card(handPosition); // Get the selected card
 

@@ -84,6 +84,4 @@ public class Card {
 	public void setUnitConfig(String unitConfig) {
 		this.unitConfig = unitConfig;
 	}
-
-	
 }

@@ -10,6 +10,8 @@ import utils.OrderedCardLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import commands.BasicCommands;
+
 
 /**
  * Stores the current state of the game, including player data, selected cards,
@@ -27,16 +29,20 @@ public class GameState {
     private GameBoard gameBoard;
     private List<Card> player1Hand;
     private List<Card> player2Hand;
-    private HashMap<Tile, Unit> unitMap;  // Map of board tiles to units
+    private HashMap<Tile, Unit> unitMap = new HashMap<>();;  // Map of board tiles to units
+    private boolean hasSummonedThisTurn = false;
+    private ActorRef out;
+
 
     /**
      * Constructor initializes game with two players and a game board.
      */
     public GameState(ActorRef out) {
+        this.out=out;
         this.player1 = new Player();
         this.player2 = new Player();
         this.gameBoard = new GameBoard(out);
-		System.out.println("✅ GameState Initialized");
+		System.out.println("GameState Initialized");
         this.unitMap = new HashMap<>();
 
         // Load Player 1's deck
@@ -69,7 +75,19 @@ public class GameState {
     }
 
     public void switchTurn() {
-        isPlayer1Turn = !isPlayer1Turn;
+        isPlayer1Turn = !isPlayer1Turn;      
+        int handPosition = 1;
+        for (Card card : OrderedCardLoader.getPlayer1Cards(1)) {
+            BasicCommands.drawCard(this.out, card, handPosition, 0);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            handPosition++;
+
+            if (handPosition > 6) break; // Display only the first 6 cards
+        } 
     }
 
     // ------------------ CARD MANAGEMENT ------------------
@@ -126,5 +144,31 @@ public class GameState {
 
     public Unit getUnit(Tile tile) {
         return unitMap.get(tile);
+    }
+
+    // Getter method for summoning flag
+    public boolean hasSummonedThisTurn() {
+        return hasSummonedThisTurn;
+    }
+
+    // Setter method to update the flag
+    public void setSummonedThisTurn(boolean summoned) {
+        this.hasSummonedThisTurn = summoned;
+    }
+
+    // Method to reset summoning status at the start of each turn
+    public void resetTurn() {
+        hasSummonedThisTurn = false;
+    }
+    // Method to remove a unit from the board
+    public void removeUnit(Tile tile, ActorRef out) {
+        if (unitMap.containsKey(tile)) {
+            Unit unit = unitMap.get(tile);
+            BasicCommands.deleteUnit(out, unit); // Remove from UI
+            unitMap.remove(tile); // Remove from tracking
+            System.out.println("Unit removed from (" + tile.getTilex() + "," + tile.getTiley() + ")");
+        } else {
+            System.err.println("No unit to remove at (" + tile.getTilex() + "," + tile.getTiley() + ")");
+        }
     }
 }

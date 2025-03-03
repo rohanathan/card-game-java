@@ -1,8 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/rohan/Downloads/java/ITSD-DT2023-24-Template/app/events/TileClicked.java:74:1: cannot find symbol[0m
-[0m[[0m[31merror[0m] [0m[0m  symbol:   method getAttack()[0m
-[0m[[0m[31merror[0m] [0m[0m  location: variable unit of type structures.basic.Unit[0m
-[0m[[0m[31merror[0m] [0m[0munit.getAttack[0m
-[0m[[0m[31merror[0m] [0m[0m/home/rohan/Downloads/java/ITSD-DT2023-24-Template/app/events/TileClicked.java:75:1: cannot find symbol[0m
-[0m[[0m[31merror[0m] [0m[0m  symbol:   method getHealth()[0m
-[0m[[0m[31merror[0m] [0m[0m  location: variable unit of type structures.basic.Unit[0m
-[0m[[0m[31merror[0m] [0m[0munit.getHealth[0m

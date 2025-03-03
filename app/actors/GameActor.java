@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import akka.stream.OverflowStrategy;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -23,6 +24,9 @@ import play.libs.Json;
 import structures.GameState;
 import utils.ImageListForPreLoad;
 import play.libs.Json;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import java.time.Duration;
 
 /**
  * The game actor is an Akka Actor that receives events from the user front-end UI (e.g. when 
@@ -91,6 +95,16 @@ public class GameActor extends AbstractActor {
 				}).build();
 	}
 
+	private final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), this);
+
+	@Override
+	public void preStart() throws Exception {
+		log.debug("GameActor started");
+		getContext().setReceiveTimeout(Duration.ofSeconds(5));
+	
+		// Increase buffer size to handle WebSocket messages
+		getContext().getSystem().eventStream().setLogLevel(Logging.DebugLevel());
+	}
 	/**
 	 * This looks up an event processor for the specified message type.
 	 * Note that this processing is asynchronous.
@@ -110,7 +124,6 @@ public class GameActor extends AbstractActor {
 			processor.processEvent(out, gameState, message); // process the event
 		}
 	}
-	
 	
 	public void reportError(String errorText) {
 		ObjectNode returnMessage = Json.newObject();
